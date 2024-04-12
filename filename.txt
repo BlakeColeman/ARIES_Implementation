@@ -1,0 +1,238 @@
+{1,s,CREATE TABLE Suppliers (sid char(40),sname char(40),city char(40),Primary Key(sid));}
+{2,s,CREATE TABLE Parts (pid char(40),pname char(40),colour char(40),Primary Key(pid));}
+{3,s,CREATE TABLE Catalogue (sid char(40),pid char(40),quantity char(40),Primary Key(sid, pid),Foreign Key(sid) References Suppliers(sid),Foreign Key(pid) References Parts(pid));}
+{1,c,CREATE TABLE Suppliers (sid char(40),sname char(40),city char(40),Primary Key(sid));}
+{2,c,CREATE TABLE Parts (pid char(40),pname char(40),colour char(40),Primary Key(pid));}
+{3,c,CREATE TABLE Catalogue (sid char(40),pid char(40),quantity char(40),Primary Key(sid, pid),Foreign Key(sid) References Suppliers(sid),Foreign Key(pid) References Parts(pid));}
+{4,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s1', 'smith', 'london'),('s2', 'jones', 'paris'),('s3', 'blake', 'paris'),('s4', 'clark', 'london'),('s5', 'adams', 'athens'),('s6', '(you)', 'regina');}
+{5,s,INSERT INTO Parts (pid, pname, colour)VALUES('p1', 'nut', 'red'),('p2', 'bolt', 'green'),('p3', 'screw', 'red'),('p4', 'cam', 'blue'),('p5', 'cog', 'green');}
+{6,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p1', '200'),('s1', 'p3', '300'),('s2', 'p1', '100'),('s2', 'p2', '400'),('s2', 'p3', '200'),('s2', 'p4', '300'),('s2', 'p5', '100'),('s3', 'p2', '200'),('s3', 'p5', '400'),('s4', 'p4', '400'),('s5', 'p1', '100'),('s5', 'p2', '200');}
+{4,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s1', 'smith', 'london'),('s2', 'jones', 'paris'),('s3', 'blake', 'paris'),('s4', 'clark', 'london'),('s5', 'adams', 'athens'),('s6', '(you)', 'regina');}
+{5,c,INSERT INTO Parts (pid, pname, colour)VALUES('p1', 'nut', 'red'),('p2', 'bolt', 'green'),('p3', 'screw', 'red'),('p4', 'cam', 'blue'),('p5', 'cog', 'green');}
+{6,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p1', '200'),('s1', 'p3', '300'),('s2', 'p1', '100'),('s2', 'p2', '400').('s2', 'p3', '200'),('s2', 'p4', '300'),('s2', 'p5', '100'),('s3', 'p2', '200'),('s3', 'p5', '400'),('s4', 'p4', '400'),('s5', 'p1', '100'),('s5', 'p2', '200');}
+{7,s,SELECT DISTINCT suppliers.sname FROM Suppliers LEFT JOIN Catalogue ON catalogue.sid=suppliers.sid LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('blue');}
+{8,s,SELECT DISTINCT suppliers.sname FROM suppliers LEFT JOIN catalogue ON catalogue.sid=suppliers.sid LEFT JOIN parts ON parts.pid=catalogue.pid WHERE parts.colour IN ('red','green');}
+{9,s,SELECT DISTINCT catalogue.sid FROM catalogue LEFT JOIN parts ON parts.pid=catalogue.pid WHERE catalogue.sid IN (SELECT DISTINCT catalogue.sid FROM catalogue LEFT JOIN parts ON parts.pid=catalogue.pid WHERE parts.colour IN ('red')) AND catalogue.sid IN (SELECT DISTINCT catalogue.sid FROM catalogue LEFT JOIN parts ON parts.pid=catalogue.pid WHERE parts.colour IN ('green'));}
+{10,s,SELECT DISTINCT catalogue.sid FROM Catalogue WHERE catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue)));}
+{11,s,SELECT DISTINCT catalogue.sid FROM Catalogue WHERE catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('red')) AND parts.colour IN ('red')));}
+{12,s,SELECT DISTINCT catalogue.sid FROM Catalogue WHERE catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('red','green')) AND parts.colour IN ('red','green')));}
+{13,s, SELECT DISTINCT catalogue.sid FROM Catalogue WHERE catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS  WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('red')) AND parts.colour IN ('red'))) OR catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('green')) AND parts.colour IN ('green')));}
+{14,s,SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN Parts WHERE (catalogue.sid,parts.pid) NOT IN (SELECT DISTINCT catalogue.sid, catalogue.pid FROM Catalogue);}
+{7,c,SELECT DISTINCT suppliers.sname FROM Suppliers LEFT JOIN Catalogue ON catalogue.sid=suppliers.sid LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('blue');}
+{8,c,SELECT DISTINCT suppliers.sname FROM suppliers LEFT JOIN catalogue ON catalogue.sid=suppliers.sid LEFT JOIN parts ON parts.pid=catalogue.pid WHERE parts.colour IN ('red','green');}
+{9,c,SELECT DISTINCT catalogue.sid FROM catalogue LEFT JOIN parts ON parts.pid=catalogue.pid WHERE catalogue.sid IN (SELECT DISTINCT catalogue.sid FROM catalogue LEFT JOIN parts ON parts.pid=catalogue.pid WHERE parts.colour IN ('red')) AND catalogue.sid IN (SELECT DISTINCT catalogue.sid FROM catalogue LEFT JOIN parts ON parts.pid=catalogue.pid WHERE parts.colour IN ('green'));}
+{10,c,SELECT DISTINCT catalogue.sid FROM Catalogue WHERE catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue)));}
+{11,c,SELECT DISTINCT catalogue.sid FROM Catalogue WHERE catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('red')) AND parts.colour IN ('red')));}
+{12,c,SELECT DISTINCT catalogue.sid FROM Catalogue WHERE catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('red','green')) AND parts.colour IN ('red','green')));}
+{13,c, SELECT DISTINCT catalogue.sid FROM Catalogue WHERE catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS  WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('red')) AND parts.colour IN ('red'))) OR catalogue.sid NOT IN (SELECT DISTINCT sid FROM(SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN PARTS WHERE (catalogue.sid,parts.pid) NOT IN (SELECT catalogue.sid,catalogue.pid FROM Catalogue LEFT JOIN Parts ON parts.pid = catalogue.pid WHERE parts.colour IN ('green')) AND parts.colour IN ('green')));}
+{14,c,SELECT DISTINCT catalogue.sid, parts.pid FROM Catalogue JOIN Parts WHERE (catalogue.sid,parts.pid) NOT IN (SELECT DISTINCT catalogue.sid, catalogue.pid FROM Catalogue);}
+{15,s,INSERT INTO Parts (pid, pname, colour)VALUES('p6', 'nut', 'red');}
+{16,s,INSERT INTO Parts (pid, pname, colour)VALUES('p7', 'bolt', 'green');}
+{17,s,INSERT INTO Parts (pid, pname, colour)VALUES('p8', 'screw', 'red');}
+{18,s,INSERT INTO Parts (pid, pname, colour)VALUES('p9', 'cam', 'blue');}
+{19,s,INSERT INTO Parts (pid, pname, colour)VALUES('p10', 'cog', 'green');}
+{20,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p6', '200');}
+{21,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p7', '300');}
+{22,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p8', '100');}
+{23,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p9', '400');}
+{24,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p6', '200');}
+{25,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p7', '300');}
+{26,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p7', '100');}
+{27,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p9', '200');}
+{28,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p6', '400');}
+{29,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p7', '400');}
+{30,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p8', '100');}
+{31,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p9', '200');}
+{32,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s7', 'Johann', 'london');}
+{33,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s8', 'Josiah', 'paris');}
+{34,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s9', 'Francois', 'paris');}
+{35,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s10', 'Smithson', 'london');}
+{36,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s11', 'Coleson', 'athens');}
+{37,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s12', '(Frederick)', 'regina');}
+{15,c,INSERT INTO Parts (pid, pname, colour)VALUES('p6', 'nut', 'red');}
+{16,c,INSERT INTO Parts (pid, pname, colour)VALUES('p7', 'bolt', 'green');}
+{17,c,INSERT INTO Parts (pid, pname, colour)VALUES('p8', 'screw', 'red');}
+{18,c,INSERT INTO Parts (pid, pname, colour)VALUES('p9', 'cam', 'blue');}
+{19,c,INSERT INTO Parts (pid, pname, colour)VALUES('p10', 'cog', 'green');}
+{38,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p10', '200');}
+{39,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p10', '200');}
+{40,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p10', '200');}
+{41,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p10', '200');}
+{42,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p10', '200');}
+{20,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p6', '200');}
+{21,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p7', '300');}
+{22,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p8', '100');}
+{23,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p9', '400');}
+{24,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p6', '200');}
+{25,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p7', '300');}
+{26,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p8', '100');}
+{27,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p9', '200');}
+{28,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p6', '400');}
+{29,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p7', '400');}
+{30,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p8', '100');}
+{31,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p9', '200');}
+{32,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s7', 'Johann', 'london');}
+{33,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s8', 'Josiah', 'paris');}
+{34,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s9', 'Francois', 'paris');}
+{35,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s10', 'Smithson', 'london');}
+{36,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s11', 'Coleson', 'athens');}
+{37,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s12', '(Frederick)', 'regina');}
+{38,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p10', '200');}
+{43,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s7', 'p10', '200');}
+{44,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s7', 'p6', '200');}
+{45,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s7', 'p7', '300');}
+{46,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s8', 'p8', '100');}
+{47,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s8', 'p9', '400');}
+{48,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s8', 'p6', '200');}
+{49,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s9', 'p7', '300');}
+{50,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s9', 'p8', '100');}
+{51,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s9', 'p9', '200');}
+{52,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s10', 'p6', '400');}
+{53,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s10', 'p7', '400');}
+{54,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s10', 'p8', '100');}
+{55,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s11', 'p9', '200');}
+{56,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s11', 'p6', '200');}
+{57,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s11', 'p7', '300');}
+{58,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s12', 'p8', '100');}
+{59,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s12', 'p9', '400');}
+{60,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s12', 'p6', '200');}
+{61,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s8', 'p7', '300');}
+{62,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s7', 'p8', '100');}
+{63,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s10', 'p9', '200');}
+{39,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p10', '200');}
+{40,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p10', '200');}
+{41,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p10', '200');}
+{42,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p10', '200');}
+{43,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s7', 'p10', '200');}
+{44,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s7', 'p6', '200');}
+{45,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s7', 'p7', '300');}
+{46,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s8', 'p8', '100');}
+{47,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s8', 'p9', '400');}
+{48,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s8', 'p6', '200');}
+{49,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s9', 'p7', '300');}
+{50,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s9', 'p8', '100');}
+{51,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s9', 'p9', '200');}
+{52,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s10', 'p6', '400');}
+{53,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s10', 'p7', '400');}
+{54,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s10', 'p8', '100');}
+{55,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s11', 'p9', '200');}
+{56,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s11', 'p6', '200');}
+{57,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s11', 'p7', '300');}
+{58,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s12', 'p8', '100');}
+{59,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s12', 'p9', '400');}
+{60,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s12', 'p6', '200');}
+{61,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s8', 'p7', '300');}
+{62,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s7', 'p8', '100');}
+{63,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s10', 'p9', '200');}
+{64,s,INSERT INTO Parts (pid, pname, colour)VALUES('p11', 'nut', 'red');}
+{65,s,INSERT INTO Parts (pid, pname, colour)VALUES('p12', 'bolt', 'green');}
+{66,s,INSERT INTO Parts (pid, pname, colour)VALUES('p13', 'screw', 'red');}
+{67,s,INSERT INTO Parts (pid, pname, colour)VALUES('p14', 'cam', 'blue');}
+{68,s,INSERT INTO Parts (pid, pname, colour)VALUES('p15', 'cog', 'green');}
+{69,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p11', '200');}
+{70,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p12', '300');}
+{71,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p13', '100');}
+{72,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p14', '400');}
+{73,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p15', '200');}
+{74,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p11', '300');}
+{75,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p13', '100');}
+{76,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p14', '200');}
+{77,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p15', '400');}
+{78,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p11', '400');}
+{79,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p12', '100');}
+{80,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p13', '200');}
+{64,c,INSERT INTO Parts (pid, pname, colour)VALUES('p11', 'nut', 'red');}
+{65,c,INSERT INTO Parts (pid, pname, colour)VALUES('p12', 'bolt', 'green');}
+{66,c,INSERT INTO Parts (pid, pname, colour)VALUES('p13', 'screw', 'red');}
+{67,c,INSERT INTO Parts (pid, pname, colour)VALUES('p14', 'cam', 'blue');}
+{68,c,INSERT INTO Parts (pid, pname, colour)VALUES('p15', 'cog', 'green');}
+{81,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s13', 'Johann', 'london');}
+{82,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s14', 'Josiah', 'paris');}
+{83,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s15', 'Francois', 'paris');}
+{84,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s16', 'Smithson', 'london');}
+{85,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s17', 'Coleson', 'athens');}
+{86,s,INSERT INTO Suppliers (sid, sname, city) VALUES('s18', '(Frederick)', 'regina');}
+{69,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p11', '200');}
+{70,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p12', '300');}
+{71,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p13', '100');}
+{72,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p14', '400');}
+{73,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p15', '200');}
+{74,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p11', '300');}
+{75,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p13', '100');}
+{76,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p14', '200');}
+{77,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p15', '400');}
+{78,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p11', '400');}
+{79,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p12', '100');}
+{80,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p13', '200');}
+{81,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s13', 'Johann', 'london');}
+{82,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s14', 'Josiah', 'paris');}
+{83,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s15', 'Francois', 'paris');}
+{84,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s16', 'Smithson', 'london');}
+{85,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s17', 'Coleson', 'athens');}
+{86,c,INSERT INTO Suppliers (sid, sname, city) VALUES('s18', '(Frederick)', 'regina');}
+{87,s,INSERT INTO Parts (pid, pname, colour)VALUES('p16', 'nut', 'red');}
+{88,s,INSERT INTO Parts (pid, pname, colour)VALUES('p17', 'bolt', 'green');}
+{89,s,INSERT INTO Parts (pid, pname, colour)VALUES('p18', 'screw', 'red');}
+{90,s,INSERT INTO Parts (pid, pname, colour)VALUES('p19', 'cam', 'blue');}
+{91,s,INSERT INTO Parts (pid, pname, colour)VALUES('p20', 'cog', 'green');}
+{87,c,INSERT INTO Parts (pid, pname, colour)VALUES('p16', 'nut', 'red');}
+{88,c,INSERT INTO Parts (pid, pname, colour)VALUES('p17', 'bolt', 'green');}
+{89,c,INSERT INTO Parts (pid, pname, colour)VALUES('p18', 'screw', 'red');}
+{90,c,INSERT INTO Parts (pid, pname, colour)VALUES('p19', 'cam', 'blue');}
+{91,c,INSERT INTO Parts (pid, pname, colour)VALUES('p20', 'cog', 'green');}
+{92,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p16', '200');}
+{93,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p16', '200');}
+{94,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p16', '200');}
+{95,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p16', '200');}
+{96,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p16', '200');}
+{97,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p18', '200');}
+{98,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p17', '300');}
+{99,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p18', '100');}
+{100,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p19', '400');}
+{101,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p20', '200');}
+{102,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p17', '300');}
+{103,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p12', '100');}
+{104,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p19', '200');}
+{105,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p20', '400');}
+{106,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p17', '400');}
+{107,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p17', '100');}
+{108,s,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p18', '200');}
+{92,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p16', '200');}
+{93,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p16', '200');}
+{94,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p16', '200');}
+{95,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p16', '200');}
+{96,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p16', '200');}
+{97,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p18', '200');}
+{98,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s1', 'p17', '300');}
+{99,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p18', '100');}
+{100,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p19', '400');}
+{103,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s2', 'p20', '100');}
+{104,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p19', '200');}
+{105,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s3', 'p20', '400');}
+{106,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s4', 'p17', '400');}
+{108,c,INSERT INTO Catalogue (sid, pid, quantity)VALUES('s5', 'p18', '200');}
+{109,s,UPDATE Catalogue SET quantity = 193 WHERE sid='s1' and pid ='p16';}
+{110,s,UPDATE Catalogue SET quantity = 133 WHERE sid='s1' and pid ='p17';}
+{111,s,UPDATE Catalogue SET quantity = 194 WHERE sid='s2' and pid ='p18';}
+{112,s,UPDATE Catalogue SET quantity = 173 WHERE sid='s2' and pid ='p19';}
+{113,s,UPDATE Catalogue SET quantity = 195 WHERE sid='s2' and pid ='p20';}
+{114,s,UPDATE Catalogue SET quantity = 143 WHERE sid='s4' and pid ='p16';}
+{115,s,UPDATE Catalogue SET quantity = 187 WHERE sid='s1' and pid ='p11';}
+{116,s,UPDATE Catalogue SET quantity = 1123 WHERE sid='s11' and pid ='p9';}
+{117,s,UPDATE Catalogue SET quantity = 1543 WHERE sid='s11' and pid ='p7';}
+{118,s,UPDATE Catalogue SET quantity = 19345 WHERE sid='s11' and pid ='p6';}
+{119,s,UPDATE Catalogue SET quantity = 14 WHERE sid='s12' and pid ='p8';}
+{120,s,UPDATE Catalogue SET quantity = 1233 WHERE sid='s12' and pid ='p9';}
+{121,s,UPDATE Catalogue SET quantity = 12 WHERE sid='s12' and pid ='p6';}
+{122,s,UPDATE Catalogue SET quantity = 183 WHERE sid='s8' and pid ='p6';}
+{123,s,UPDATE Catalogue SET quantity = 163 WHERE sid='s8' and pid ='p7';}
+{109,c,UPDATE Catalogue SET quantity = 193 WHERE sid='s1' and pid ='p16';}
+{110,c,UPDATE Catalogue SET quantity = 133 WHERE sid='s1' and pid ='p17';}
+{111,c,UPDATE Catalogue SET quantity = 194 WHERE sid='s2' and pid ='p18';}
+{112,c,UPDATE Catalogue SET quantity = 173 WHERE sid='s2' and pid ='p19';}
+{113,c,UPDATE Catalogue SET quantity = 195 WHERE sid='s2' and pid ='p20';}
+{114,c,UPDATE Catalogue SET quantity = 143 WHERE sid='s4' and pid ='p16';}
+{115,c,UPDATE Catalogue SET quantity = 187 WHERE sid='s1' and pid ='p11';}
+{116,c,UPDATE Catalogue SET quantity = 1123 WHERE sid='s11' and pid ='p9';}
+{117,c,UPDATE Catalogue SET quantity = 1543 WHERE sid='s11' and pid ='p7';}
+{118,c,UPDATE Catalogue SET quantity = 19345 WHERE sid='s11' and pid ='p6';}
